@@ -28,31 +28,29 @@ function output_error($title, $error) {
     <title>
         Pizza Data Report
     </title>
+    <?php include_once 'bs.php'; ?>
 </head>
 <style>
     .pizzaDataTable {
-        font-family: Consolas, monospace;
-        font-size: larger;
         border-spacing: 0;
     }
     .pizzaDataRow td {
-        border-bottom: 1px solid #888888;
         padding-left: 10px;
     }
     .pizzaDataHeader td {
-        font-weight: bold;
         padding-right: 20px;
     }
 
     .pizzaDataDetailsCell {
         padding-left: 20px;
-        font-size: medium;
     }
     .pizzaDataTable tr:nth-child(2n) {
         background-color: #cccccc;
     }
 </style>
 <body>
+<?php include_once 'header.php'; ?>
+
     <h1>Pizza Data report</h1>
     <?php
     if ($conError) {
@@ -60,12 +58,14 @@ function output_error($title, $error) {
     }
     else {
         function output_table_open() {
-            echo "<table class='pizzaDataTable'>\n";
+            echo "<table class='table table-striped'>\n";
+            echo "<thead>";
             echo "<tr class='pizzaDataHeader'>\n";
             echo "  <td>Name</td>\n";
             echo "  <td>Age</td>\n";
             echo "  <td>Gender</td>\n";
             echo "</tr>\n";
+            echo "</thead>";
         }
 
         function output_table_close() {
@@ -138,5 +138,7 @@ function output_error($title, $error) {
         }
     }
     ?>
+
+<?php include_once 'footer.php'; ?>
 </body>
 </html>

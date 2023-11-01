@@ -28,9 +28,11 @@
 <html>
     <head>
         <title>Pizza Data Import</title>
+        <?php include_once 'bs.php'; ?>
     </head>
     <body>
-        <h1>Pizza Data Import</h1>
+    <?php include_once 'header.php';?>
+    <h1>Pizza Data Import</h1>
         <?php
 
             if ($importAttempted) {
@@ -52,9 +54,14 @@
             }
         ?>
         <form method="POST" enctype="multipart/form-data">
-            File: <input type="file" name="importFile"/>
+            <div class="input-group">
+
+            </div>
+            <span class="input-group-text">File:</span>
+            <input class="input-form-control" type="file" name="importFile"/>
             <br><br>
-            <button type="submit">Submit</button>
+            <button class="btn btn-primary" type="submit">Submit</button>
         </form>
+    <?php include_once 'footer.php'; ?>
     </body>
 </html>
