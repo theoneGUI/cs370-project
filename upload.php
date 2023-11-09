@@ -9,12 +9,53 @@
         if ($con[0]) {
             $con = $con[1];
             $contents = file_get_contents($_FILES["importFile"]['tmp_name']);
-            $lines = explode('\n', $contents);
-
+            $lines = explode("\n", $contents);
+            $header = str_getcsv($lines[0]);
+            $lastDept = null;
+            $lastSeller = null;
             for ($i = 1; $i < count($lines); $i++) {
                 $line = $lines[$i];
                 $parsedLine = str_getcsv($line);
-                // TODO: do the code and import to database
+                $assoc = array_combine($header, $parsedLine);
+                // Import departments
+                if ($assoc["DeptName"] != $lastDept) {
+                    $stmt = mysqli_prepare($con, "INSERT INTO department (DeptName) VALUES (?) ON DUPLICATE KEY UPDATE DeptName = ?");
+                    mysqli_stmt_bind_param($stmt, "ss", $assoc["DeptName"], $assoc["DeptName"]);
+                    mysqli_stmt_execute($stmt);
+                    $lastDeptId = $con->insert_id;
+                    if ($lastDeptId == 0) {
+                        $word = addslashes($assoc["DeptName"]);
+                        $result = mysqli_query($con, "SELECT DepartmentID FROM department WHERE DeptName = '{$word}'");
+                        $result = mysqli_fetch_assoc($result);
+                        $lastDeptId = $result["DepartmentID"];
+                    }
+                    $lastDept = $assoc["DeptName"];
+                }
+                // Import Sellers
+                if ($assoc["SellerName"] != $lastSeller) {
+                    $stmt = mysqli_prepare($con, "INSERT INTO seller (SellerName, DepartmentID, PhoneNumber,EmailAddress) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE DepartmentID = ?, PhoneNumber = ?, EmailAddress = ?");
+                    mysqli_stmt_bind_param($stmt, "siisiis", $assoc["SellerName"], $lastDeptId, $assoc["PhoneNumber"], $assoc["EmailAddress"], $lastDeptId, $assoc["PhoneNumber"], $assoc["EmailAddress"]);
+                    mysqli_stmt_execute($stmt);
+                    $lastSellerId = $con->insert_id;
+                    if ($lastSellerId == 0) {
+                        $word = addslashes($assoc["SellerName"]);
+                        $result = mysqli_query($con, "SELECT SellerID FROM seller WHERE SellerName = '{$word}'");
+                        $result = mysqli_fetch_assoc($result);
+                        $lastSellerId = $result["SellerID"];
+                    }
+                    $lastSeller = $assoc["SellerName"];
+                }
+                // Import each item
+                $stmt = mysqli_prepare($con, "INSERT INTO item (SKU, ItemName, ItemType, SellerID, Price, QuantityAvailable) VALUES (?,?,?,?,?,?)" .
+                                                    " ON DUPLICATE KEY UPDATE Price = ?, QuantityAvailable = ?");
+                mysqli_stmt_bind_param($stmt, "issidsdi",
+                    $assoc["SKU"], $assoc["ItemName"], $assoc["ItemType"], $lastSellerId, $assoc["Price"], $assoc["QuantityAvailable"], $assoc["Price"], $assoc["QuantityAvailable"]);
+                mysqli_stmt_execute($stmt);
+
+                if ($lastSeller == null)
+                    $lastSeller = $assoc["SellerName"];
+                if ($lastDept == null)
+                    $lastDept = $assoc["DeptName"];
             }
             $importSucceeded = true;
         }
@@ -27,12 +68,13 @@
 
 <html>
     <head>
-        <title>Pizza Data Import</title>
+        <title>Amazon 2.0 Data Import</title>
         <?php include_once 'bs.php'; ?>
     </head>
     <body>
     <?php include_once 'header.php';?>
-    <h1>Pizza Data Import</h1>
+    <h1>>Amazon 2.0 Data Import</h1>
+    <h3>Departments, Sellers, and Items</h3>
         <?php
 
             if ($importAttempted) {

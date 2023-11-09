@@ -98,9 +98,7 @@ function output_error($title, $error) {
         }
 
 
-        $query = " SELECT t0.name, t0.age, t0.gender, t1.pizza, t2.pizzeria"
-                ." FROM person t0 LEFT OUTER JOIN eats t1 ON t0.name = t1.name"
-                ." LEFT OUTER JOIN frequents t2 ON t0.name = t2.name";
+        $query = " SELECT * FROM user";
         $result = mysqli_query($con, $query);
         if ( ! $result) {
             if (mysqli_errno($con)) {
