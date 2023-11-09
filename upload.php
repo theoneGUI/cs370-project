@@ -16,6 +16,7 @@
             for ($i = 1; $i < count($lines); $i++) {
                 $line = $lines[$i];
                 $parsedLine = str_getcsv($line);
+                if (count($parsedLine) == 0) continue; // skip blank lines
                 $assoc = array_combine($header, $parsedLine);
                 // Import departments
                 if ($assoc["DeptName"] != $lastDept) {
@@ -46,10 +47,10 @@
                     $lastSeller = $assoc["SellerName"];
                 }
                 // Import each item
-                $stmt = mysqli_prepare($con, "INSERT INTO item (SKU, ItemName, ItemType, SellerID, Price, QuantityAvailable) VALUES (?,?,?,?,?,?)" .
+                $stmt = mysqli_prepare($con, "INSERT INTO item (SKU, ItemName, ItemType, SellerID, Price, QuantityAvailable, ItemID) VALUES (?,?,?,?,?,?,?)" .
                                                     " ON DUPLICATE KEY UPDATE Price = ?, QuantityAvailable = ?");
-                mysqli_stmt_bind_param($stmt, "issidsdi",
-                    $assoc["SKU"], $assoc["ItemName"], $assoc["ItemType"], $lastSellerId, $assoc["Price"], $assoc["QuantityAvailable"], $assoc["Price"], $assoc["QuantityAvailable"]);
+                mysqli_stmt_bind_param($stmt, "issidiidi",
+                    $assoc["SKU"], $assoc["ItemName"], $assoc["ItemType"], $lastSellerId, $assoc["Price"], $assoc["QuantityAvailable"], $assoc["ItemID"], $assoc["Price"], $assoc["QuantityAvailable"]);
                 mysqli_stmt_execute($stmt);
 
                 if ($lastSeller == null)
