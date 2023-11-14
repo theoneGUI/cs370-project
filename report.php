@@ -26,7 +26,7 @@ function output_error($title, $error) {
 <html>
 <head>
     <title>
-        Pizza Data Report
+        Amazon 2.0
     </title>
     <?php include_once 'bs.php'; ?>
 </head>
@@ -51,7 +51,7 @@ function output_error($title, $error) {
 <body>
 <?php include_once 'header.php'; ?>
 
-    <h1>Pizza Data report</h1>
+    <h1>Amazon 2.0</h1>
     <?php
     if ($conError) {
         echo output_error("error", $importErrorMesg);
@@ -61,9 +61,13 @@ function output_error($title, $error) {
             echo "<table class='table table-striped'>\n";
             echo "<thead>";
             echo "<tr class='pizzaDataHeader'>\n";
-            echo "  <td>Name</td>\n";
-            echo "  <td>Age</td>\n";
-            echo "  <td>Gender</td>\n";
+            echo "  <td>UserID</td>\n";
+            echo "  <td>OrderID</td>\n";
+            echo "  <td>UserName</td>\n";
+            echo "  <td>OrderDate</td>\n";
+            echo "  <td>CreditCardNumber</td>\n";
+            echo "  <td>OrderStatus</td>\n";
+            echo "  <td>TotalPrice</td>\n";
             echo "</tr>\n";
             echo "</thead>";
         }
@@ -72,40 +76,53 @@ function output_error($title, $error) {
             echo "</table>\n";
         }
 
-        function output_person_row($name, $age, $gender) {
+        function output_order_row($UserID, $OrderID, $UserName, $OrderDate, $CreditCardNumber, $OrderStatus, $TotalPrice) {
             echo "<tr class='pizzaDataRow'>\n";
-            echo "  <td>{$name}</td>\n";
-            echo "  <td>{$age}</td>\n";
-            echo "  <td>{$gender}</td>\n";
+            echo "  <td>{$UserID}</td>\n";
+            echo "  <td>{$OrderID}</td>\n";
+            echo "  <td>{$UserName}</td>\n";
+            echo "  <td>{$OrderDate}</td>\n";
+            echo "  <td>{$CreditCardNumber}</td>\n";
+            echo "  <td>{$OrderStatus}</td>\n";
+            echo "  <td>{$TotalPrice}</td>\n";
             echo "</tr>\n";
         }
 
-        function output_person_details_row($pizzas, $pizzerias) {
-            $pizzas_string = "None";
-            $pizzerias_str = "None";
-            if (count($pizzas) != 0) {
-                $pizzas_string = implode(", ", $pizzas);
+        function output_order_details_row($items, $returns) {
+            $items_string = "None";
+            $return_str = "None";
+            if (count($items) != 0) {
+                $items_string = implode(", ", $items);
             }
-            if (count($pizzerias) != 0) {
-                $pizzerias_str = implode(", ", $pizzerias);
+            if (count($returns) != 0) {
+                $return_str = implode(", ", $returns);
             }
             echo "<tr>";
                 echo "<td colspan='3' class='pizzaDataDetailsCell'>";
-                    echo "Pizzas eaten: {$pizzas_string} <br>\n" .
-                        " Pizzerias Frequented: {$pizzerias_str}<br>\n"
+                    echo "Items ordered: {$items_string} <br>\n" .
+                        " Items returned: {$return_str}<br>\n"
                 . "</td>";
             echo "</tr>";
         }
 
 
-        $query = " SELECT * FROM user";
+        $query = "SELECT t0.OrderDate, t0.CreditCardNumber, t0.OrderID, t0.OrderStatus, t0.TotalPrice, 
+                  t2.ItemID, t3.ItemID AS ReturnItemID, t4.ItemName, CONCAT(t1.FirstName, ' ', t1.LastName) 
+                  AS UserName FROM `Order` t0 
+                  INNER JOIN User t1 
+                  ON t0.UserID = t1.UserID
+                  INNER JOIN OrderItem t2 
+                  ON t0.OrderID = t2.OrderID
+                  LEFT OUTER JOIN `Return` t3 
+                  ON t0.OrderID = t3.OrderID AND t2.ItemID = t3.ItemID
+                  INNER JOIN Item t4 ON t2.ItemID =  t4.ItemID";
         $result = mysqli_query($con, $query);
         if ( ! $result) {
             if (mysqli_errno($con)) {
                 output_error("Data retrieval failure", mysqli_error($con));
             }
             else {
-                echo "No pizza data found";
+                echo "No order data found!";
             }
         }
         else {
@@ -115,22 +132,23 @@ function output_error($title, $error) {
             $pizzas = array();
             $pizzerias = array();
             while ($row = $result->fetch_array()) {
-                if ($lastName != $row["name"]) {
+                if ($lastName != $row["OrderID"]) {
                     if ($lastName != null) {
-                        output_person_details_row($pizzas, $pizzerias);
+                        output_order_details_row($pizzas, $pizzerias);
                     }
-                    output_person_row($row["name"], $row["age"], $row["gender"]);
+                    output_order_row($row["UserID"], $row["OrderID"], $row["UserName"], $row["UserName"],
+                        $row["OrderDate"], $row["CreditCardNumber"], $row["OrderStatus"], $row["TotalPrice"]);
 
                     $pizzas = array();
                     $pizzerias = array();
                 }
-                if (!in_array($row["pizza"], $pizzas))
-                    $pizzas[] = $row["pizza"];
-                if (!in_array($row["pizzeria"], $pizzerias))
-                    $pizzerias[] = $row["pizzeria"];
-                $lastName = $row["name"];
+                if (!in_array($row["ItemID"], $pizzas))
+                    $pizzas[] = $row["ItemID"];
+                if (!in_array($row["ReturnItemID"], $pizzerias))
+                    $pizzerias[] = $row["ReturnItemID"];
+                $lastName = $row["OrderID"];
             }
-            output_person_details_row($pizzas, $pizzerias);
+            output_order_details_row($pizzas, $pizzerias);
 
             output_table_close();
         }
