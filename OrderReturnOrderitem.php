@@ -60,7 +60,7 @@ if ($importAttempted) {
 <body>
 <?php include_once 'header.php';?>
 <h1>>Amazon 2.0 Data Import</h1>
-<h3>Departments, Sellers, and Items</h3>
+<h3>Orders, Items on Orders, and Returns</h3>
 <?php
 
 if ($importAttempted) {

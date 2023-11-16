@@ -89,9 +89,9 @@ if ($importAttempted) {
 
         ?>
         <span style="color: red;">
-                            <h1>Import Failed</h1>
-                            <?php echo $importErrorMesg; ?>
-                        </span>
+            <h1>Import Failed</h1>
+            <?php echo $importErrorMesg; ?>
+        </span>
         <?php
         echo "<br><br>";
     }
