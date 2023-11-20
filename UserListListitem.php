@@ -8,6 +8,27 @@ if ($importAttempted) {
     $con = connect();
     if ($con[0]) {
         $con = $con[1];
+        function getSellerId($sellerName) {
+            global $con;
+            $word = addslashes($sellerName);
+            $result = mysqli_query($con, "SELECT SellerID FROM seller WHERE SellerName = '{$word}'");
+            $result = mysqli_fetch_assoc($result);
+            return $result["SellerID"];
+        }
+        function getItemId($itemName, $sellerId) {
+            global $con;
+            $word = addslashes($itemName);
+            $result = mysqli_query($con, "SELECT ItemID FROM item WHERE ItemName = '{$word}' AND SellerID = {$sellerId}");
+            $result = mysqli_fetch_assoc($result);
+            return $result["ItemID"];
+        }
+        function getAcctStat($acctStatName) {
+            global $con;
+            $word = addslashes($acctStatName);
+            $result = mysqli_query($con, "SELECT AccountStatusID FROM accountstatus WHERE AccountStatusName = '{$word}'");
+            $result = mysqli_fetch_assoc($result);
+            return $result["AccountStatusID"];
+        }
         $contents = file_get_contents($_FILES["importFile"]['tmp_name']);
         $lines = explode("\n", $contents);
         $header = str_getcsv($lines[0]);
@@ -19,14 +40,15 @@ if ($importAttempted) {
             if (count($parsedLine) == 0) continue; // skip blank lines
             $assoc = array_combine($header, $parsedLine);
             // Import Users
-            if ($assoc["UserID"] != $lastUser) {
-                $stmt = mysqli_prepare($con, "INSERT INTO `user` (UserID, AccountStatusID,FirstName,LastName,DeliveryAddress,Password,`Language`,PhoneNumber,EmailAddress) VALUES (?,?,?,?,?,?,?,?,?)" .
-                    " ON DUPLICATE KEY UPDATE AccountStatusID = ?, FirstName = ?, LastName = ?, DeliveryAddress = ?, Password = ?, `Language` = ?, PhoneNumber = ?, EmailAddress = ?");
-                mysqli_stmt_bind_param($stmt, "iisssssisisssssis",$assoc["UserID"], $assoc["AccountStatusID"], $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"], $assoc["EmailAddress"],
-                    $assoc["AccountStatusID"], $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"], $assoc["EmailAddress"]);
+            if ($assoc["EmailAddress"] != $lastUser) {
+                $fetchedStatus = getAcctStat($assoc["AccountStatus"]);
+                $stmt = mysqli_prepare($con, "INSERT INTO `user` (AccountStatusID,FirstName,LastName,DeliveryAddress,Password,`Language`,PhoneNumber,EmailAddress) VALUES (?,?,?,?,?,?,?,?)" .
+                    " ON DUPLICATE KEY UPDATE AccountStatusID = ?, FirstName = ?, LastName = ?, DeliveryAddress = ?, Password = ?, `Language` = ?, PhoneNumber = ?");
+                mysqli_stmt_bind_param($stmt, "isssssisisssssi",$fetchedStatus, $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"], $assoc["EmailAddress"],
+                    $fetchedStatus, $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"]);
                 mysqli_stmt_execute($stmt);
-                $lastUserId = $assoc["UserID"];
-                $lastUser = $assoc["UserID"];
+                $lastUserId = $con->insert_id;
+                $lastUser = $assoc["EmailAddress"];
             }
             // Import Lists
             if ($assoc["ListName"] != $lastList && $assoc["ListName"] != null) {
@@ -45,19 +67,19 @@ if ($importAttempted) {
             }
 
             if ($lastUser == null)
-                $lastUser = $assoc["UserID"];
+                $lastUser = $assoc["EmailAddress"];
             if ($lastList == -1)
                 $lastList = $assoc["ListName"];
 
-            if ($lastList != null && $assoc["ItemID"] != '') {
+            if ($lastList != null && $assoc["SellerName"] != '') {
                 // Import ListItems
+                $fetchedItem = getItemId($assoc["ItemName"], getSellerId($assoc["SellerName"]));
                 $stmt = mysqli_prepare($con, "INSERT INTO listitem (ListID, ItemID, ItemQuantity) VALUES (?,?,?)" .
                     " ON DUPLICATE KEY UPDATE ItemQuantity = ?");
                 mysqli_stmt_bind_param($stmt, "iiii",
-                    $lastListId, $assoc["ItemID"], $assoc["ItemQuantity"], $assoc["ItemQuantity"]);
+                    $lastListId, $fetchedItem, $assoc["ItemQuantity"], $assoc["ItemQuantity"]);
                 mysqli_stmt_execute($stmt);
             }
-
         }
         $importSucceeded = true;
     }
@@ -67,6 +89,7 @@ if ($importAttempted) {
     }
 }
 ?>
+
 
 <html>
 <head>

@@ -47,10 +47,11 @@
                     $lastSeller = $assoc["SellerName"];
                 }
                 // Import each item
-                $stmt = mysqli_prepare($con, "INSERT INTO item (SKU, ItemName, ItemType, SellerID, Price, QuantityAvailable, ItemID) VALUES (?,?,?,?,?,?,?)" .
+                $stmt = mysqli_prepare($con, "INSERT INTO item (SKU, ItemName, ItemType, SellerID, Price, QuantityAvailable) VALUES (?,?,?,?,?,?)" .
                                                     " ON DUPLICATE KEY UPDATE Price = ?, QuantityAvailable = ?");
-                mysqli_stmt_bind_param($stmt, "issidiidi",
-                    $assoc["SKU"], $assoc["ItemName"], $assoc["ItemType"], $lastSellerId, $assoc["Price"], $assoc["QuantityAvailable"], $assoc["ItemID"], $assoc["Price"], $assoc["QuantityAvailable"]);
+                mysqli_stmt_bind_param($stmt, "issididi",
+                    $assoc["SKU"], $assoc["ItemName"], $assoc["ItemType"], $lastSellerId, $assoc["Price"], $assoc["QuantityAvailable"],
+                        $assoc["Price"], $assoc["QuantityAvailable"]);
                 mysqli_stmt_execute($stmt);
 
                 if ($lastSeller == null)

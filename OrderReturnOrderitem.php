@@ -8,6 +8,20 @@ if ($importAttempted) {
     $con = connect();
     if ($con[0]) {
         $con = $con[1];
+        function getSellerId($sellerName) {
+            global $con;
+            $word = addslashes($sellerName);
+            $result = mysqli_query($con, "SELECT SellerID FROM seller WHERE SellerName = '{$word}'");
+            $result = mysqli_fetch_assoc($result);
+            return $result["SellerID"];
+        }
+        function getItemId($itemName, $sellerId) {
+            global $con;
+            $word = addslashes($itemName);
+            $result = mysqli_query($con, "SELECT ItemID FROM item WHERE ItemName = '{$word}' AND SellerID = {$sellerId}");
+            $result = mysqli_fetch_assoc($result);
+            return $result["ItemID"];
+        }
         $contents = file_get_contents($_FILES["importFile"]['tmp_name']);
         $lines = explode("\n", $contents);
         $header = str_getcsv($lines[0]);
@@ -19,24 +33,30 @@ if ($importAttempted) {
             $assoc = array_combine($header, $parsedLine);
             // Import Orders
             if ($assoc["OrderID"] != $lastOrder) {
+                $word = addslashes($assoc["UserEmail"]);
+                $result = mysqli_query($con, "SELECT UserID FROM user WHERE EmailAddress = '{$word}'");
+                $result = mysqli_fetch_assoc($result);
+                $fetchedUser = $result["UserID"];
+
                 $stmt = mysqli_prepare($con, "INSERT INTO `order` (OrderID, UserID, TotalPrice, OrderStatus, CreditCardNumber, OrderDate) VALUES (?, ?, ?, ?, ?, ?)" .
                     " ON DUPLICATE KEY UPDATE TotalPrice = ?, OrderStatus = ?, CreditCardNumber = ?, OrderDate = ?");
-                mysqli_stmt_bind_param($stmt, "iidsssdsss", $assoc["OrderID"], $assoc["UserID"], $assoc["TotalPrice"], $assoc["OrderStatus"], $assoc["CreditCardNumber"], $assoc["OrderDate"],
+                mysqli_stmt_bind_param($stmt, "iidsssdsss", $assoc["OrderID"], $fetchedUser, $assoc["TotalPrice"], $assoc["OrderStatus"], $assoc["CreditCardNumber"], $assoc["OrderDate"],
                     $assoc["TotalPrice"], $assoc["OrderStatus"], $assoc["CreditCardNumber"], $assoc["OrderDate"]);
                 mysqli_stmt_execute($stmt);
                 $lastOrderId = $assoc["OrderID"];
                 $lastOrder = $assoc["OrderID"];
             }
             // Import OrderItems
+            $fetchedItem = getItemId($assoc["ItemName"], getSellerId($assoc["SellerName"]));
             $stmt = mysqli_prepare($con, "INSERT INTO orderitem (OrderID, ItemID, ItemQuantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ItemQuantity = ?");
-            mysqli_stmt_bind_param($stmt, "iiii", $lastOrderId, $assoc["ItemID"], $assoc["OrderItemQuantity"], $assoc["OrderItemQuantity"]);
+            mysqli_stmt_bind_param($stmt, "iiii", $lastOrderId, $fetchedItem, $assoc["OrderItemQuantity"], $assoc["OrderItemQuantity"]);
             mysqli_stmt_execute($stmt);
             // Import Returns
             if ($assoc["ReturnItemQuantity"] != null && $assoc["ReturnDate"] != null) {
                 $stmt = mysqli_prepare($con, "INSERT INTO `return` (OrderID, ItemID, ItemQuantity, ReturnDate) VALUES (?, ?, ?, ?)" .
                     " ON DUPLICATE KEY UPDATE ItemQuantity = ?, ReturnDate = ?");
                 mysqli_stmt_bind_param($stmt, "iiisis",
-                    $lastOrderId, $assoc["ItemID"], $assoc["ReturnItemQuantity"], $assoc["ReturnDate"], $assoc["ReturnItemQuantity"], $assoc["ReturnDate"]);
+                    $lastOrderId, $fetchedItem, $assoc["ReturnItemQuantity"], $assoc["ReturnDate"], $assoc["ReturnItemQuantity"], $assoc["ReturnDate"]);
                 mysqli_stmt_execute($stmt);
             }
 
