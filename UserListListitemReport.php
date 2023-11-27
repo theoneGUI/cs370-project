@@ -1,14 +1,6 @@
 <?php
 require 'config.php';
 $importAttempted =  ($_SERVER["REQUEST_METHOD"] == "POST");
-$importSucceeded = false;
-$importErrorMesg = "";
-?>
-
-
-<?php
-require 'config.php';
-$importAttempted =  ($_SERVER["REQUEST_METHOD"] == "POST");
 $conError = false;
 $importErrorMesg = "";
 
