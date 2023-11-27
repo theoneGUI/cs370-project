@@ -5,13 +5,13 @@
            href="#" role="button" aria-expanded="false">Data Import</a>
         <ul class="dropdown-menu">
             <li>
-                <a class="dropdown-item" href="/OrderReturnOrderitem.php">Import Orders and Returns</a>
+                <a class="dropdown-item" href="/OrderReturnOrderitemImport.php">Import Orders and Returns</a>
             </li>
             <li>
-                <a class="dropdown-item" href="/upload.php">Import Sellers and Items and Departments</a>
+                <a class="dropdown-item" href="/DepartmentSellerItemImport.php">Import Sellers and Items and Departments</a>
             </li>
             <li>
-                <a class="dropdown-item" href="/UserListListitem.php">Import User and Lists</a>
+                <a class="dropdown-item" href="/UserListListitemImport.php">Import User and Lists</a>
             </li>
         </ul>
     </li>
@@ -20,10 +20,13 @@
            href="#" role="button" aria-expanded="false">Data Report</a>
         <ul class="dropdown-menu">
             <li>
-                <a class="dropdown-item" href="report.php">Report</a>
+                <a class="dropdown-item" href="DepartmentSellerItemReport.php">Report on Departments, Items, and Sellers</a>
             </li>
             <li>
-                <a class="dropdown-item" href="report.php">Report</a>
+                <a class="dropdown-item" href="UserListListitemReport.php">Report on Users and Lists</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="OrderReturnOrderitemReport.php">Report on Orders and Returns</a>
             </li>
         </ul>
     </li>
