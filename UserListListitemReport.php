@@ -79,11 +79,6 @@ if ($importAttempted) {
             echo "  <td>Language</td>\n";
             echo "  <td>PhoneNumber</td>\n";
             echo "  <td>EmailAddress</td>\n";
-            echo "  <td>ListID</td>\n";
-            echo "  <td>ListName</td>\n";
-            echo "  <td>ItemID</td>\n";
-            echo "  <td>ItemQuantity</td>\n";
-            echo "  <td>ItemName</td>\n";
             echo "</tr>\n";
             echo "</thead>";
         }
@@ -148,14 +143,16 @@ if ($importAttempted) {
             $lastName = null;
             $pizzas = array();
             $pizzerias = array();
+            $lastUser = null;
             while ($row = $result->fetch_array()) {
                 if ($lastName != $row["ListName"]) {
                     if ($lastName != null) {
-                        output_order_details_row($pizzas, $pizzerias);
+                        output_order_details_row($pizzerias, $pizzas);
                     }
-                    output_order_row($row["UserID"], $row["AccountStatusID"], $row["UserName"], $row["DeliveryAddress"],
-                        $row["Password"], $row["Language"], $row["PhoneNumber"], $row["EmailAddress"]);
-
+                    if($lastUser != $row["UserID"]){
+                        output_order_row($row["UserID"], $row["AccountStatusID"], $row["UserName"], $row["DeliveryAddress"],
+                            $row["Password"], $row["Language"], $row["PhoneNumber"], $row["EmailAddress"]);
+                    }
                     $pizzas = array();
                     $pizzerias = array();
                 }
@@ -164,8 +161,9 @@ if ($importAttempted) {
                 if (!in_array($row["ListName"], $pizzerias))
                     $pizzerias[] = $row["ListName"];
                 $lastName = $row["ListName"];
+                $lastUser = $row["UserID"];
             }
-            output_order_details_row($pizzas, $pizzerias);
+            output_order_details_row($pizzerias, $pizzas);
 
             output_table_close();
         }
