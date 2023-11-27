@@ -3,91 +3,6 @@ require 'config.php';
 $importAttempted =  ($_SERVER["REQUEST_METHOD"] == "POST");
 $importSucceeded = false;
 $importErrorMesg = "";
-
-if ($importAttempted) {
-    $con = connect();
-    if ($con[0]) {
-        $con = $con[1];
-        function getSellerId($sellerName) {
-            global $con;
-            $word = addslashes($sellerName);
-            $result = mysqli_query($con, "SELECT SellerID FROM seller WHERE SellerName = '{$word}'");
-            $result = mysqli_fetch_assoc($result);
-            return $result["SellerID"];
-        }
-        function getItemId($itemName, $sellerId) {
-            global $con;
-            $word = addslashes($itemName);
-            $result = mysqli_query($con, "SELECT ItemID FROM item WHERE ItemName = '{$word}' AND SellerID = {$sellerId}");
-            $result = mysqli_fetch_assoc($result);
-            return $result["ItemID"];
-        }
-        function getAcctStat($acctStatName) {
-            global $con;
-            $word = addslashes($acctStatName);
-            $result = mysqli_query($con, "SELECT AccountStatusID FROM accountstatus WHERE AccountStatusName = '{$word}'");
-            $result = mysqli_fetch_assoc($result);
-            return $result["AccountStatusID"];
-        }
-        $contents = file_get_contents($_FILES["importFile"]['tmp_name']);
-        $lines = explode("\n", $contents);
-        $header = str_getcsv($lines[0]);
-        $lastUser = null;
-        $lastList = -1;
-        for ($i = 1; $i < count($lines); $i++) {
-            $line = $lines[$i];
-            $parsedLine = str_getcsv($line);
-            if (count($parsedLine) == 0) continue; // skip blank lines
-            $assoc = array_combine($header, $parsedLine);
-            // Import Users
-            if ($assoc["EmailAddress"] != $lastUser) {
-                $fetchedStatus = getAcctStat($assoc["AccountStatus"]);
-                $stmt = mysqli_prepare($con, "INSERT INTO `user` (AccountStatusID,FirstName,LastName,DeliveryAddress,Password,`Language`,PhoneNumber,EmailAddress) VALUES (?,?,?,?,?,?,?,?)" .
-                    " ON DUPLICATE KEY UPDATE AccountStatusID = ?, FirstName = ?, LastName = ?, DeliveryAddress = ?, Password = ?, `Language` = ?, PhoneNumber = ?");
-                mysqli_stmt_bind_param($stmt, "isssssisisssssi",$fetchedStatus, $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"], $assoc["EmailAddress"],
-                    $fetchedStatus, $assoc["FirstName"], $assoc["LastName"], $assoc["DeliveryAddress"], $assoc["Password"], $assoc["Language"], $assoc["PhoneNumber"]);
-                mysqli_stmt_execute($stmt);
-                $lastUserId = $con->insert_id;
-                $lastUser = $assoc["EmailAddress"];
-            }
-            // Import Lists
-            if ($assoc["ListName"] != $lastList && $assoc["ListName"] != null) {
-                $stmt = mysqli_prepare($con, "INSERT INTO list (UserID, ListName) VALUES (?, ?) " .
-                    " ON DUPLICATE KEY UPDATE ListName = ?");
-                mysqli_stmt_bind_param($stmt, "iss", $lastUserId, $assoc["ListName"], $assoc["ListName"]);
-                mysqli_stmt_execute($stmt);
-                $lastListId = $con->insert_id;
-                if ($lastListId == 0) {
-                    $word = addslashes($assoc["ListName"]);
-                    $result = mysqli_query($con, "SELECT ListID FROM list WHERE ListName = '{$word}' AND UserID = {$lastUserId}");
-                    $result = mysqli_fetch_assoc($result);
-                    $lastListId = $result["ListID"];
-                }
-                $lastList = $assoc["ListName"];
-            }
-
-            if ($lastUser == null)
-                $lastUser = $assoc["EmailAddress"];
-            if ($lastList == -1)
-                $lastList = $assoc["ListName"];
-
-            if ($lastList != null && $assoc["SellerName"] != '') {
-                // Import ListItems
-                $fetchedItem = getItemId($assoc["ItemName"], getSellerId($assoc["SellerName"]));
-                $stmt = mysqli_prepare($con, "INSERT INTO listitem (ListID, ItemID, ItemQuantity) VALUES (?,?,?)" .
-                    " ON DUPLICATE KEY UPDATE ItemQuantity = ?");
-                mysqli_stmt_bind_param($stmt, "iiii",
-                    $lastListId, $fetchedItem, $assoc["ItemQuantity"], $assoc["ItemQuantity"]);
-                mysqli_stmt_execute($stmt);
-            }
-        }
-        $importSucceeded = true;
-    }
-    else {
-        $importErrorMesg = $con[1];
-        $importSucceeded = false;
-    }
-}
 ?>
 
 
@@ -115,10 +30,6 @@ function output_error($title, $error) {
 }
 
 ?>
-
-
-
-
 
 <html>
 <head>
@@ -182,7 +93,7 @@ if ($importAttempted) {
         }
 
         function output_order_row($UserID, $AccountStatusID, $UserName, $DeliveryAddress, $Password, $Language,
-        $PhoneNumber, $EmailAddress, $ListID, $ListName, $ItemID, $ItemQuantity, $ItemName) {
+        $PhoneNumber, $EmailAddress) {
             echo "<tr class='pizzaDataRow'>\n";
             echo "  <td>{$UserID}</td>\n";
             echo "  <td>{$AccountStatusID}</td>\n";
@@ -192,27 +103,22 @@ if ($importAttempted) {
             echo "  <td>{$Language}</td>\n";
             echo "  <td>{$PhoneNumber}</td>\n";
             echo "  <td>{$EmailAddress}</td>\n";
-            echo "  <td>{$ListID}</td>\n";
-            echo "  <td>{$ListName}</td>\n";
-            echo "  <td>{$ItemID}</td>\n";
-            echo "  <td>{$ItemQuantity}</td>\n";
-            echo "  <td>{$ItemName}</td>\n";
             echo "</tr>\n";
         }
 
-        function output_order_details_row($users, $lists) {
-            $items_string = "None";
-            $return_str = "None";
-            if (count($users) != 0) {
-                $items_string = implode(", ", $users);
-            }
+        function output_order_details_row($lists, $items) {
+            $list_string = "None";
+            $item_str = "None";
             if (count($lists) != 0) {
-                $return_str = implode(", ", $lists);
+                $list_string = implode(", ", $lists);
+            }
+            if (count($items) != 0) {
+                $item_str = implode(", ", $items);
             }
             echo "<tr>";
                 echo "<td colspan='3' class='pizzaDataDetailsCell'>";
-                    echo "Users: {$items_string} <br>\n" .
-                        " Lists: {$return_str}<br>\n"
+                    echo "ListName: {$list_string} <br>\n" .
+                        " Items: {$item_str}<br>\n"
                 . "</td>";
             echo "</tr>";
         }
@@ -243,22 +149,21 @@ if ($importAttempted) {
             $pizzas = array();
             $pizzerias = array();
             while ($row = $result->fetch_array()) {
-                if ($lastName != $row["UserID"]) {
+                if ($lastName != $row["ListName"]) {
                     if ($lastName != null) {
                         output_order_details_row($pizzas, $pizzerias);
                     }
                     output_order_row($row["UserID"], $row["AccountStatusID"], $row["UserName"], $row["DeliveryAddress"],
-                        $row["Password"], $row["Language"], $row["PhoneNumber"], $row["EmailAddress"], $row["ListID"],
-                        $row["ListName"], $row["ItemID"], $row["ItemQuantity"], $row["ItemName"]);
+                        $row["Password"], $row["Language"], $row["PhoneNumber"], $row["EmailAddress"]);
 
                     $pizzas = array();
                     $pizzerias = array();
                 }
-                if (!in_array($row["UserID"], $pizzas))
-                    $pizzas[] = $row["UserID"];
-                if (!in_array($row["ListID"], $pizzerias))
-                    $pizzerias[] = $row["ListID"];
-                $lastName = $row["UserID"];
+                if (!in_array($row["ItemName"], $pizzas))
+                    $pizzas[] = $row["ItemName"];
+                if (!in_array($row["ListName"], $pizzerias))
+                    $pizzerias[] = $row["ListName"];
+                $lastName = $row["ListName"];
             }
             output_order_details_row($pizzas, $pizzerias);
 
@@ -266,18 +171,6 @@ if ($importAttempted) {
         }
     }
 ?>
-
-
-
-<form method="POST" enctype="multipart/form-data">
-    <div class="input-group">
-
-    </div>
-    <span class="input-group-text">File:</span>
-    <input class="input-form-control" type="file" name="importFile"/>
-    <br><br>
-    <button class="btn btn-primary" type="submit">Submit</button>
-</form>
 <?php include_once 'footer.php'; ?>
 </body>
 </html>
