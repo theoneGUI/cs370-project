@@ -1,115 +1,159 @@
 <?php
 require 'config.php';
 $importAttempted =  ($_SERVER["REQUEST_METHOD"] == "POST");
-$importSucceeded = false;
+$conError = false;
 $importErrorMesg = "";
 
-if ($importAttempted) {
-    $con = connect();
-    if ($con[0]) {
-        $con = $con[1];
-        function getSellerId($sellerName) {
-            global $con;
-            $word = addslashes($sellerName);
-            $result = mysqli_query($con, "SELECT SellerID FROM seller WHERE SellerName = '{$word}'");
-            $result = mysqli_fetch_assoc($result);
-            return $result["SellerID"];
-        }
-        function getItemId($itemName, $sellerId) {
-            global $con;
-            $word = addslashes($itemName);
-            $result = mysqli_query($con, "SELECT ItemID FROM item WHERE ItemName = '{$word}' AND SellerID = {$sellerId}");
-            $result = mysqli_fetch_assoc($result);
-            return $result["ItemID"];
-        }
-        $contents = file_get_contents($_FILES["importFile"]['tmp_name']);
-        $lines = explode("\n", $contents);
-        $header = str_getcsv($lines[0]);
-        $lastOrder = null;
-        for ($i = 1; $i < count($lines); $i++) {
-            $line = $lines[$i];
-            $parsedLine = str_getcsv($line);
-            if (count($parsedLine) == 0) continue; // skip blank lines
-            $assoc = array_combine($header, $parsedLine);
-            // Import Orders
-            if ($assoc["OrderID"] != $lastOrder) {
-                $word = addslashes($assoc["UserEmail"]);
-                $result = mysqli_query($con, "SELECT UserID FROM user WHERE EmailAddress = '{$word}'");
-                $result = mysqli_fetch_assoc($result);
-                $fetchedUser = $result["UserID"];
+$con = @connect();
+if ($con[0]) {
+    $con = $con[1];
 
-                $stmt = mysqli_prepare($con, "INSERT INTO `order` (OrderID, UserID, TotalPrice, OrderStatus, CreditCardNumber, OrderDate) VALUES (?, ?, ?, ?, ?, ?)" .
-                    " ON DUPLICATE KEY UPDATE TotalPrice = ?, OrderStatus = ?, CreditCardNumber = ?, OrderDate = ?");
-                mysqli_stmt_bind_param($stmt, "iidsssdsss", $assoc["OrderID"], $fetchedUser, $assoc["TotalPrice"], $assoc["OrderStatus"], $assoc["CreditCardNumber"], $assoc["OrderDate"],
-                    $assoc["TotalPrice"], $assoc["OrderStatus"], $assoc["CreditCardNumber"], $assoc["OrderDate"]);
-                mysqli_stmt_execute($stmt);
-                $lastOrderId = $assoc["OrderID"];
-                $lastOrder = $assoc["OrderID"];
-            }
-            // Import OrderItems
-            $fetchedItem = getItemId($assoc["ItemName"], getSellerId($assoc["SellerName"]));
-            $stmt = mysqli_prepare($con, "INSERT INTO orderitem (OrderID, ItemID, ItemQuantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ItemQuantity = ?");
-            mysqli_stmt_bind_param($stmt, "iiii", $lastOrderId, $fetchedItem, $assoc["OrderItemQuantity"], $assoc["OrderItemQuantity"]);
-            mysqli_stmt_execute($stmt);
-            // Import Returns
-            if ($assoc["ReturnItemQuantity"] != null && $assoc["ReturnDate"] != null) {
-                $stmt = mysqli_prepare($con, "INSERT INTO `return` (OrderID, ItemID, ItemQuantity, ReturnDate) VALUES (?, ?, ?, ?)" .
-                    " ON DUPLICATE KEY UPDATE ItemQuantity = ?, ReturnDate = ?");
-                mysqli_stmt_bind_param($stmt, "iiisis",
-                    $lastOrderId, $fetchedItem, $assoc["ReturnItemQuantity"], $assoc["ReturnDate"], $assoc["ReturnItemQuantity"], $assoc["ReturnDate"]);
-                mysqli_stmt_execute($stmt);
-            }
-
-            if ($lastOrder == null)
-                $lastOrder = $assoc["OrderID"];
-        }
-        $importSucceeded = true;
-    }
-    else {
-        $importErrorMesg = $con[1];
-        $importSucceeded = false;
-    }
 }
+else {
+    $importErrorMesg = $con[1];
+    $conError = true;
+}
+
+function output_error($title, $error) {
+    echo "<span style='color:red;'>\n";
+    echo "<h2>". $title . "</h2>\n";
+    echo "<h4>" . $error . "</h4>";
+    echo "</span>";
+}
+
 ?>
 
 <html>
 <head>
-    <title>Amazon 2.0 Data Import</title>
+    <title>
+        Amazon 2.0
+    </title>
     <?php include_once 'bs.php'; ?>
 </head>
-<body>
-<?php include_once 'header.php';?>
-<h1>>Amazon 2.0 Data Import</h1>
-<h3>Orders, Items on Orders, and Returns</h3>
-<?php
+<style>
+    .pizzaDataTable {
+        border-spacing: 0;
+    }
+    .pizzaDataRow td {
+        padding-left: 10px;
+    }
+    .pizzaDataHeader td {
+        padding-right: 20px;
+    }
 
-if ($importAttempted) {
-    if ($importSucceeded) {
-        ?>
-        <h1 style="color:green;">Import Succeeded</h1>
-        <?php
+    .pizzaDataDetailsCell {
+        padding-left: 20px;
+    }
+    .pizzaDataTable tr:nth-child(2n) {
+        background-color: #cccccc;
+    }
+</style>
+<body>
+<?php include_once 'header.php'; ?>
+
+<h1>Amazon 2.0</h1>
+<?php
+if ($conError) {
+    echo output_error("error", $importErrorMesg);
+}
+else {
+    function output_table_open() {
+        echo "<table class='table table-striped'>\n";
+        echo "<thead>";
+        echo "<tr class='pizzaDataHeader'>\n";
+        echo "  <td>OrderID</td>\n";
+        echo "  <td>UserName</td>\n";
+        echo "  <td>OrderDate</td>\n";
+        echo "  <td>CreditCardNumber</td>\n";
+        echo "  <td>OrderStatus</td>\n";
+        echo "  <td>TotalPrice</td>\n";
+        echo "</tr>\n";
+        echo "</thead>";
+    }
+
+    function output_table_close() {
+        echo "</table>\n";
+    }
+
+    function output_order_row($OrderID, $UserName, $OrderDate, $CreditCardNumber, $OrderStatus, $TotalPrice) {
+        echo "<tr class='pizzaDataRow'>\n";
+        echo "  <td>{$OrderID}</td>\n";
+        echo "  <td>{$UserName}</td>\n";
+        echo "  <td>{$OrderDate}</td>\n";
+        echo "  <td>{$CreditCardNumber}</td>\n";
+        echo "  <td>{$OrderStatus}</td>\n";
+        echo "  <td>{$TotalPrice}</td>\n";
+        echo "</tr>\n";
+    }
+
+    function output_order_details_row($items, $returns) {
+        $items_string = "None";
+        $return_str = "None";
+        if (count($items) != 0) {
+            $items_string = implode(", ", $items);
+        }
+        if (count($returns) != 0) {
+            $return_str = implode(", ", $returns);
+        }
+        echo "<tr>";
+        echo "<td colspan='3' class='pizzaDataDetailsCell'>";
+        echo "Items ordered: {$items_string} <br>\n" .
+            " Items returned: {$return_str}<br>\n"
+            . "</td>";
+        echo "</tr>";
+    }
+
+
+    $query = "SELECT t0.OrderDate, t0.CreditCardNumber, t0.OrderID, t0.OrderStatus, t0.TotalPrice, 
+                  t2.ItemID, t4.ItemName, t3.ItemID AS ReturnItemID, t5.ItemName AS ReturnItemName, t4.ItemName, CONCAT(t1.FirstName, ' ', t1.LastName) 
+                  AS UserName FROM `Order` t0 
+                  INNER JOIN User t1 
+                  ON t0.UserID = t1.UserID
+                  INNER JOIN OrderItem t2 
+                  ON t0.OrderID = t2.OrderID
+                  LEFT OUTER JOIN `Return` t3 
+                  ON t0.OrderID = t3.OrderID AND t2.ItemID = t3.ItemID
+                  INNER JOIN Item t4 ON t2.ItemID =  t4.ItemID " .
+                    "LEFT OUTER JOIN Item t5 ON t3.ItemID = t5.ItemID";
+    $result = mysqli_query($con, $query);
+    if ( ! $result) {
+        if (mysqli_errno($con)) {
+            output_error("Data retrieval failure", mysqli_error($con));
+        }
+        else {
+            echo "No order data found!";
+        }
     }
     else {
+        output_table_open();
 
-        ?>
-        <span style="color: red;">
-                            <h1>Import Failed</h1>
-                            <?php echo $importErrorMesg; ?>
-                        </span>
-        <?php
-        echo "<br><br>";
+        $lastName = null;
+        $pizzas = array();
+        $pizzerias = array();
+        while ($row = $result->fetch_array()) {
+            if ($lastName != $row["OrderID"]) {
+                if ($lastName != null) {
+                    output_order_details_row($pizzas, $pizzerias);
+                }
+                output_order_row($row["OrderID"], $row["UserName"], $row["UserName"],
+                    $row["OrderDate"], $row["CreditCardNumber"], $row["OrderStatus"], $row["TotalPrice"]);
+
+                $pizzas = array();
+                $pizzerias = array();
+            }
+            if (!in_array($row["ItemName"], $pizzas))
+                $pizzas[] = $row["ItemName"];
+            if (!in_array($row["ReturnItemName"], $pizzerias))
+                $pizzerias[] = $row["ReturnItemName"];
+            $lastName = $row["OrderID"];
+        }
+        output_order_details_row($pizzas, $pizzerias);
+
+        output_table_close();
     }
 }
 ?>
-<form method="POST" enctype="multipart/form-data">
-    <div class="input-group">
 
-    </div>
-    <span class="input-group-text">File:</span>
-    <input class="input-form-control" type="file" name="importFile"/>
-    <br><br>
-    <button class="btn btn-primary" type="submit">Submit</button>
-</form>
 <?php include_once 'footer.php'; ?>
 </body>
 </html>
