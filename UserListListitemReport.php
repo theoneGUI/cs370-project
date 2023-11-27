@@ -3,6 +3,7 @@ require 'config.php';
 $importAttempted =  ($_SERVER["REQUEST_METHOD"] == "POST");
 $conError = false;
 $importErrorMesg = "";
+$importSucceeded = false;
 
 $con = @connect();
 if ($con[0]) {
