@@ -83,7 +83,7 @@ function output_error($title, $error) {
             echo "</tr>\n";
         }
 
-        function output_order_details_row($departments, $items) {
+        function output_order_details_row($items, $departments) {
             $department_string = "None";
             $item_str = "None";
             if (count($departments) != 0) {
