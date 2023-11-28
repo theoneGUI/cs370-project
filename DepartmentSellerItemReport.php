@@ -96,6 +96,7 @@ function output_error($title, $error) {
             echo "</tr>";
 
             echo "<tr><td>Items that are sold:</td></tr>";
+            echo "<tr><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
             $output = "";
             foreach($items as $i){
                 $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
