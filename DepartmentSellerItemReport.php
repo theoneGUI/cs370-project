@@ -59,9 +59,9 @@ function output_error($title, $error) {
     }
     else {
         function output_table_open() {
-            echo "<table class='table table-striped'>\n";
+            echo "<table class='table'>\n";
             echo "<thead>";
-            echo "<tr class='pizzaDataHeader'>\n";
+            echo "<tr class='fw-bold'>\n";
             echo "  <td>SellerID</td>\n";
             echo "  <td>SellerName</td>\n";
             echo "  <td>PhoneNumber</td>\n";
@@ -75,7 +75,7 @@ function output_error($title, $error) {
         }
 
         function output_order_row($SellerID, $SellerName, $PhoneNumber, $EmailAddress) {
-            echo "<tr class='pizzaDataRow'>\n";
+            echo "<tr class='table-active'>\n";
             echo "  <td>{$SellerID}</td>\n";
             echo "  <td>{$SellerName}</td>\n";
             echo "  <td>{$PhoneNumber}</td>\n";
@@ -96,7 +96,7 @@ function output_error($title, $error) {
             echo "</tr>";
 
             echo "<tr><td>Items that are sold:</td></tr>";
-            echo "<tr><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+            echo "<tr class='fw-bold'><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
             $output = "";
             foreach($items as $i){
                 $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";

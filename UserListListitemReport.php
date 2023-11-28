@@ -61,9 +61,9 @@ if ($importAttempted) {
     }
     else {
         function output_table_open() {
-            echo "<table class='table table-striped'>\n";
+            echo "<table class='table'>\n";
             echo "<thead>";
-            echo "<tr class='pizzaDataHeader'>\n";
+            echo "<tr class='fw-bold'>\n";
             echo "  <td>UserID</td>\n";
             echo "  <td>AccountStatusID</td>\n";
             echo "  <td>UserName</td>\n";
@@ -82,7 +82,7 @@ if ($importAttempted) {
 
         function output_order_row($UserID, $AccountStatusID, $UserName, $DeliveryAddress, $Password, $Language,
         $PhoneNumber, $EmailAddress) {
-            echo "<tr class='pizzaDataRow'>\n";
+            echo "<tr class='table-active'>\n";
             echo "  <td>{$UserID}</td>\n";
             echo "  <td>{$AccountStatusID}</td>\n";
             echo "  <td>{$UserName}</td>\n";
@@ -106,7 +106,7 @@ if ($importAttempted) {
             echo "</tr>";
 
             echo "<tr><td>Items in List:</td></tr>";
-            echo "<tr><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+            echo "<tr class='fw-bold'><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
             $output = "";
             foreach($items as $i){
                 $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
