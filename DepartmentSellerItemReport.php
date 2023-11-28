@@ -144,7 +144,8 @@ function output_error($title, $error) {
                 if (!in_array($row["ItemName"], $pizzerias))
                     $pizzerias[] = $row["ItemName"];
                 $lastName = $row["ItemName"];
-                $lastUser = $row["DepartmentID"];
+                $lastUser = $row["SellerID"];
+
             }
             output_order_details_row($pizzerias, $pizzas);
 
