@@ -105,10 +105,12 @@ if ($importAttempted) {
             }
             echo "<tr>";
                 echo "<td colspan='3' class='pizzaDataDetailsCell'>";
-                    echo "ListName: {$list_string} <br>\n" .
-                        " Items: {$item_str}<br>\n"
+                    echo "ListName: {$list_string} <br>\n"
                 . "</td>";
             echo "</tr>";
+
+            echo "<tr><td>Items in List:</td></tr>";
+            echo "<tr><td></td><td>$item_str</td></tr>";
         }
 
 
