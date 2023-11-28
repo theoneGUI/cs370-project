@@ -89,9 +89,6 @@ function output_error($title, $error) {
             if (count($departments) != 0) {
                 $department_string = implode(", ", $departments);
             }
-            if (count($items) != 0) {
-                $item_str = implode(", ", $items);
-            }
             echo "<tr>";
             echo "<td colspan='3' class='pizzaDataDetailsCell'>";
             echo "Department Name: {$department_string} <br>\n"
@@ -99,7 +96,11 @@ function output_error($title, $error) {
             echo "</tr>";
 
             echo "<tr><td>Items that are sold:</td></tr>";
-            echo "<tr><td></td><td>$item_str</td></tr>";
+            $output = "";
+            foreach($items as $i){
+                $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+            }
+            echo $output;
         }
 
 
@@ -127,10 +128,11 @@ function output_error($title, $error) {
             $pizzas = array();
             $pizzerias = array();
             $lastUser = null;
+            $lastDepartment = null;
             while ($row = $result->fetch_array()) {
                 if ($lastName != $row["DepartmentID"]) {
                     if ($lastName != null) {
-                        output_order_details_row($pizzerias, $pizzas);
+                        output_order_details_row($pizzas, $pizzerias);
                     }
                     if($lastUser != $row["SellerID"]){
                         output_order_row($row['SellerID'], $row['SellerName'], $row['PhoneNumber'],
@@ -139,15 +141,19 @@ function output_error($title, $error) {
                     $pizzas = array();
                     $pizzerias = array();
                 }
-                if (!in_array($row["DeptName"], $pizzas))
-                    $pizzas[] = $row["DeptName"];
-                if (!in_array($row["ItemName"], $pizzerias))
-                    $pizzerias[] = $row["ItemName"];
+                if (!in_array($row["DeptName"], $pizzerias))
+                    $pizzerias[] = $row["DeptName"];
+                if (!in_array($row["ItemName"], $pizzas))
+                    $pizzas[] = array("item" =>  $row["ItemName"],
+                                        "price" => $row["Price"],
+                                        "quantity" => $row["QuantityAvailable"]
+                    );
+
                 $lastName = $row["ItemName"];
                 $lastUser = $row["SellerID"];
 
             }
-            output_order_details_row($pizzerias, $pizzas);
+            output_order_details_row($pizzas, $pizzerias);
 
             output_table_close();
         }
