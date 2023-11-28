@@ -149,8 +149,9 @@ function output_error($title, $error) {
                                         "quantity" => $row["QuantityAvailable"]
                     );
 
-                $lastName = $row["ItemName"];
+                $lastName = $row["DepartmentID"];
                 $lastUser = $row["SellerID"];
+                $lastDepartment = $row["DepartmentID"];
 
             }
             output_order_details_row($pizzas, $pizzerias);
