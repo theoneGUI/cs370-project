@@ -96,12 +96,8 @@ if ($importAttempted) {
 
         function output_order_details_row($lists, $items) {
             $list_string = "None";
-            $item_str = "None";
             if (count($lists) != 0) {
                 $list_string = implode(", ", $lists);
-            }
-            if (count($items) != 0) {
-                $item_str = implode(", ", $items);
             }
             echo "<tr>";
                 echo "<td colspan='3' class='pizzaDataDetailsCell'>";
@@ -110,13 +106,18 @@ if ($importAttempted) {
             echo "</tr>";
 
             echo "<tr><td>Items in List:</td></tr>";
-            echo "<tr><td></td><td>$item_str</td></tr>";
+            echo "<tr><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+            $output = "";
+            foreach($items as $i){
+                $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+            }
+            echo $output;
         }
 
 
         $query = "SELECT t0.UserID, t0.AccountStatusID, CONCAT(t0.FirstName, ' ',  t0.LastName) AS UserName, t0.DeliveryAddress, 
         t0.Password, t0.Language, t0.PhoneNumber, t0.EmailAddress, t1.ListID, t1.ListName, t2.ItemID, t2.ItemQuantity,
-        t3.ItemName FROM `User` t0 
+        t3.ItemName, t3.Price FROM `User` t0 
         INNER JOIN `List` t1
         ON t0.UserID = t1.UserID
         INNER JOIN `ListItem` t2
@@ -152,7 +153,11 @@ if ($importAttempted) {
                     $pizzerias = array();
                 }
                 if (!in_array($row["ItemName"], $pizzas))
-                    $pizzas[] = $row["ItemName"];
+                    $pizzas[] = array(
+                            "item" => $row["ItemName"],
+                            "price" => $row["Price"],
+                            "quantity" => $row["ItemQuantity"]
+                    );
                 if (!in_array($row["ListName"], $pizzerias))
                     $pizzerias[] = $row["ListName"];
                 $lastName = $row["ListName"];
