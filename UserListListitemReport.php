@@ -100,7 +100,7 @@ if ($importAttempted) {
                 $list_string = implode(", ", $lists);
             }
             echo "<tr>";
-                echo "<td colspan='4' class='pizzaDataDetailsCell'>";
+                echo "<td colspan='4' class='fw-bold'>";
                     echo "ListName: {$list_string} <br>\n"
                 . "</td>";
             echo "</tr>";
