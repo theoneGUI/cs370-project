@@ -40,8 +40,6 @@ function output_error($title, $error) {
 </style>
 <body>
 <?php include_once 'header.php'; ?>
-
-<h1>Amazon 2.0</h1>
 <?php
 if ($conError) {
     echo output_error("error", $importErrorMesg);
@@ -50,7 +48,7 @@ else {
     function output_table_open() {
         echo "<table class='table'>\n";
         echo "<thead>";
-        echo "<tr class='pizzaDataHeader'>\n";
+        echo "<tr class='fw-bold'>\n";
         echo "  <td>OrderID</td>\n";
         echo "  <td>UserName</td>\n";
         echo "  <td>OrderDate</td>\n";
@@ -81,7 +79,7 @@ else {
         $needPrintItemHeader = true;
         foreach ($items as $i) {
             if ($i["Used"])
-                $output .= "<tr><td></td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
+                $output .= "<tr><td></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
         }
         if ($output == "") {
             echo "<tr><td>No items ordered.</td></tr>";
@@ -89,13 +87,13 @@ else {
         else {
             $needPrintItemHeader = false;
             echo "<tr><td>Items Ordered:<td></tr>";
-            echo "<tr><td></td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
+            echo "<tr class='fw-bold'><td></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
             echo $output;
         }
         $output = "";
         foreach ($returns as $i) {
             if ($i["Used"])
-                $output .= "<tr><td></td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
+                $output .= "<tr><td></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
         }
         if ($output == "") {
             echo "<tr><td>No items returned.</td></tr>";
@@ -103,7 +101,7 @@ else {
         else {
             echo "<tr><td>Items Returned:<td></tr>";
             if ($needPrintItemHeader)
-                echo "<tr><td></td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
+                echo "<tr class='fw-bold'><td></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
             echo $output;
         }
     }
@@ -154,6 +152,7 @@ else {
             if (!in_array($row["ItemName"], $pizzas))
                 $pizzas[] = array(
                         "Used" => $row["ItemName"] != null,
+                        "Id" => $row["ItemID"],
                         "Name" => $row["ItemName"],
                         "Price" => $row["OrderItemPrice"],
                         "Seller" => $row["OrderItemSellerName"],
@@ -162,6 +161,7 @@ else {
             if (!in_array($row["ReturnItemName"], $pizzerias))
                 $pizzerias[] = array(
                         "Used" => $row["ReturnItemName"] != null,
+                        "Id" => $row["ReturnItemID"],
                         "Name" => $row["ReturnItemName"],
                         "Price" => $row["ReturnItemPrice"],
                         "Seller" => $row["ReturnItemSellerName"],

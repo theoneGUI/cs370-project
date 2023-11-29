@@ -90,16 +90,16 @@ function output_error($title, $error) {
                 $department_string = implode(", ", $departments);
             }
             echo "<tr>";
-            echo "<td colspan='3' class='pizzaDataDetailsCell'>";
+            echo "<td colspan='4' class='pizzaDataDetailsCell'>";
             echo "Department Name: {$department_string} <br>\n"
                 . "</td>";
             echo "</tr>";
 
-            echo "<tr><td>Items that are sold:</td></tr>";
-            echo "<tr class='fw-bold'><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+            echo "<tr><td colspan='4' >Items that are sold:</td></tr>";
+            echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
             $output = "";
             foreach($items as $i){
-                $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+                $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
             }
             echo $output;
         }
@@ -111,8 +111,8 @@ function output_error($title, $error) {
         INNER JOIN `Seller` t1 
         ON t0.DepartmentID = t1.DepartmentID
         INNER JOIN `Item` t2
-        ON t1.SellerID = t2.SellerID";
-        ;
+        ON t1.SellerID = t2.SellerID ORDER BY t0.DepartmentID, t1.SellerID";
+
         $result = mysqli_query($con, $query);
         if ( ! $result) {
             if (mysqli_errno($con)) {
@@ -125,37 +125,37 @@ function output_error($title, $error) {
         else {
             output_table_open();
 
-            $lastName = null;
-            $pizzas = array();
-            $pizzerias = array();
-            $lastUser = null;
+            $lastDept = null;
+            $items = array();
+            $departments = array();
+            $lastSeller = null;
             $lastDepartment = null;
             while ($row = $result->fetch_array()) {
-                if ($lastName != $row["DepartmentID"]) {
-                    if ($lastName != null) {
-                        output_order_details_row($pizzas, $pizzerias);
+                if ($lastSeller != $row["SellerID"]) {
+                    if ($lastDept != null) {
+                        output_order_details_row($items, $departments);
                     }
-                    if($lastUser != $row["SellerID"]){
+                    if($lastSeller != $row["SellerID"]){
                         output_order_row($row['SellerID'], $row['SellerName'], $row['PhoneNumber'],
                         $row['EmailAddress']);
                     }
-                    $pizzas = array();
-                    $pizzerias = array();
+                    $items = array();
+                    $departments = array();
                 }
-                if (!in_array($row["DeptName"], $pizzerias))
-                    $pizzerias[] = $row["DeptName"];
-                if (!in_array($row["ItemName"], $pizzas))
-                    $pizzas[] = array("item" =>  $row["ItemName"],
+                if (!in_array($row["DeptName"], $departments))
+                    $departments[] = $row["DeptName"];
+                if (!in_array($row["ItemName"], $items))
+                    $items[] = array("item" =>  $row["ItemName"],
                                         "price" => $row["Price"],
                                         "quantity" => $row["QuantityAvailable"]
                     );
 
-                $lastName = $row["DepartmentID"];
-                $lastUser = $row["SellerID"];
+                $lastDept = $row["DepartmentID"];
+                $lastSeller = $row["SellerID"];
                 $lastDepartment = $row["DepartmentID"];
 
             }
-            output_order_details_row($pizzas, $pizzerias);
+            output_order_details_row($items, $departments);
 
             output_table_close();
         }

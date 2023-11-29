@@ -98,7 +98,7 @@ if ($importAttempted) {
 </head>
 <body>
 <?php include_once 'header.php';?>
-<h1>>Amazon 2.0 Data Import</h1>
+<h1>Amazon 2.0 Data Import</h1>
 <h3>Users and Lists</h3>
 <?php
 

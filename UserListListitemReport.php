@@ -114,8 +114,7 @@ if ($importAttempted) {
             echo $output;
         }
 
-
-        $query = "SELECT t0.UserID, t0.AccountStatusID, CONCAT(t0.FirstName, ' ',  t0.LastName) AS UserName, t0.DeliveryAddress, 
+        $query = "SELECT t0.UserID, t4.AccountStatusName AS AccountStatusID, CONCAT(t0.FirstName, ' ',  t0.LastName) AS UserName, t0.DeliveryAddress, 
         t0.Password, t0.Language, t0.PhoneNumber, t0.EmailAddress, t1.ListID, t1.ListName, t2.ItemID, t2.ItemQuantity,
         t3.ItemName, t3.Price FROM `User` t0 
         INNER JOIN `List` t1
@@ -123,7 +122,8 @@ if ($importAttempted) {
         INNER JOIN `ListItem` t2
         ON t1.ListID = t2.ListID
         INNER JOIN `Item` t3
-        ON t2.ItemID = t3.ItemID";
+        ON t2.ItemID = t3.ItemID "
+        . "INNER JOIN AccountStatus t4 ON t4.AccountStatusID = t0.AccountStatusID";
         $result = mysqli_query($con, $query);
         if ( ! $result) {
             if (mysqli_errno($con)) {

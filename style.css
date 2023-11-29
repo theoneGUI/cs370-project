@@ -44,8 +44,44 @@ section {
     padding: 10px;
 }
 
-li.nav-item {
-    color: green;
-    background-color: transparent;
-    text-decoration: none;
+.container {
+    font-family: "Baskerville", sans-serif;
+    padding: 20px;
+    margin-bottom: 100px;
+}
+
+.fw-bold {
+    font-weight: bold;
+}
+
+.table {
+    padding: 20px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #ddd;
+    padding: 4px;
+}
+
+.table-active {
+    background-color: #CCCCCC;
+}
+
+.table-borderless {
+    border: none;
+}
+
+.btn {
+    color: white;
+    background-color: #D2B48C;
+    border: #E3C59D;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 2px 3px 0px 1px black;
+}
+
+.btn:hover {
+    background-color: #c19356;
 }
