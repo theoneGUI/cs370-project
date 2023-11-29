@@ -28,7 +28,7 @@ function output_error($title, $error) {
 <head>
     <title>Amazon 2.0 Data Report</title>
     <?php include_once 'bs.php'; ?>
-</head>
+</head>x
 <body>
 <?php include_once 'header.php';?>
 <h1>Amazon 2.0 Data Report</h1>

@@ -66,24 +66,24 @@
         <li class="nav-item dropdown">
             <ul class="dropdown-menu">
                 <li>
-                    <a class="dropdown-item" href="/OrderReturnOrderitemImport.php">Orders and Returns Import</a>
+                    <a class="dropdown-item" href="OrderReturnOrderitemImport.php">Orders and Returns Import</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="/DepartmentSellerItemImport.php">Sellers and Items and Departments Import</a>
+                    <a class="dropdown-item" href="DepartmentSellerItemImport.php">Sellers and Items and Departments Import</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="/UserListListitemImport.php">User and Lists Import</a>
+                    <a class="dropdown-item" href="UserListListitemImport.php">User and Lists Import</a>
                 </li>
             </ul>
             <ul class="dropdown-menu">
                 <li>
-                    <a class="dropdown-item" href="/OrderReturnOrderitemReport.php">Orders and Returns Report</a>
+                    <a class="dropdown-item" href="OrderReturnOrderitemReport.php">Orders and Returns Report</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="/DepartmentSellerItemReport.php">Sellers and Items and Departments Report</a>
+                    <a class="dropdown-item" href="DepartmentSellerItemReport.php">Sellers and Items and Departments Report</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="/UserListListitemReport.php">User and Lists Report</a>
+                    <a class="dropdown-item" href="UserListListitemReport.php">User and Lists Report</a>
                 </li>
             </ul>
         </li>
