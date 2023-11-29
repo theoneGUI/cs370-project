@@ -62,7 +62,7 @@
 
 <nav>
     <ul>
-        <li class="nav-item"><a class="nav-link" href="/index.php">Amazon 2.0 Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="index.php">Amazon 2.0 Home</a></li>
         <li class="nav-item dropdown">
             <ul class="dropdown-menu">
                 <li>
