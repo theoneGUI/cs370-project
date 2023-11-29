@@ -1,8 +1,8 @@
 AccountStatus,FirstName,LastName,DeliveryAddress,Password,Language,PhoneNumber,EmailAddress,ListName,SellerName,ItemName,ItemQuantity
-Regular,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Hat,10
-Regular,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Hat2,10
-Regular,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Pant,10
-Regular,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Bag,10
-Regular,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wish but...,KitchenAid,Spatula,10
-Regular,Jane,Doe,123 Main St.,password123,en-gb,3092311234,b@a.com,Want More,Microsoft,Windows,10000
-Plus,Persnickety,Doe,1234 University St,admin,en-us,5551113333,c@b.com,,,,
+Regular Acct,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Hat,10
+Regular Acct,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Hat2,10
+Regular Acct,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Pant,10
+Regular Acct,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wishlist,Gucci,Bag,10
+Regular Acct,Joe,Mama,123 Delivery Drive,password,en-us,3092524561,a@a.com,Wish but...,KitchenAid,Spatula,10
+Regular Acct,Jane,Doe,123 Main St.,password123,en-gb,3092311234,b@a.com,Want More,Microsoft,Windows,10000
+Plus Acct,Persnickety,Doe,1234 University St,admin,en-us,5551113333,c@b.com,,,,
