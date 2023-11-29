@@ -107,10 +107,10 @@ function output_error($title, $error) {
 
         $query = "SELECT t0.DepartmentID, t0.DeptName, t1.SellerID, t1.SellerName, t1.PhoneNumber,
         t1.EmailAddress, t2.ItemID, t2.SKU, t2.ItemName, t2.ItemType, t2.Price, t2.QuantityAvailable
-        FROM `Department` t0
-        INNER JOIN `Seller` t1 
+        FROM `department` t0
+        INNER JOIN `seller` t1 
         ON t0.DepartmentID = t1.DepartmentID
-        INNER JOIN `Item` t2
+        INNER JOIN `item` t2
         ON t1.SellerID = t2.SellerID ORDER BY t0.DepartmentID, t1.SellerID";
 
         $result = mysqli_query($con, $query);

@@ -111,18 +111,18 @@ else {
                   t2.ItemID, t4.ItemName, t3.ItemID AS ReturnItemID, t5.ItemName AS ReturnItemName, t4.ItemName, CONCAT(t1.FirstName, ' ', t1.LastName) 
                   AS UserName, t6.ItemName as OrderItemName, t6.Price as OrderItemPrice, t2.ItemQuantity as OrderItemQuantity,
                   t7.SellerName AS OrderItemSellerName, t8.SellerName AS ReturnItemSellerName, t3.ItemQuantity AS ReturnItemQuantity, t5.Price AS ReturnItemPrice
-                  FROM `Order` t0 
-                  INNER JOIN User t1 
+                  FROM `order` t0 
+                  INNER JOIN user t1 
                   ON t0.UserID = t1.UserID
-                  INNER JOIN OrderItem t2 
+                  INNER JOIN orderitem t2 
                   ON t0.OrderID = t2.OrderID
-                  LEFT OUTER JOIN `Return` t3 
+                  LEFT OUTER JOIN `return` t3 
                   ON t0.OrderID = t3.OrderID AND t2.ItemID = t3.ItemID
-                  INNER JOIN Item t4 ON t2.ItemID =  t4.ItemID " .
-                    "LEFT OUTER JOIN Item t5 ON t3.ItemID = t5.ItemID ".
-                    "LEFT OUTER JOIN Item t6 ON t2.ItemID = t6.ItemID ".
-                    "LEFT OUTER JOIN Seller t7 ON t6.SellerID = t7.SellerID ".
-                    "LEFT OUTER JOIN Seller t8 ON t5.SellerID = t8.SellerID";
+                  INNER JOIN item t4 ON t2.ItemID =  t4.ItemID " .
+                    "LEFT OUTER JOIN item t5 ON t3.ItemID = t5.ItemID ".
+                    "LEFT OUTER JOIN item t6 ON t2.ItemID = t6.ItemID ".
+                    "LEFT OUTER JOIN seller t7 ON t6.SellerID = t7.SellerID ".
+                    "LEFT OUTER JOIN seller t8 ON t5.SellerID = t8.SellerID";
     $result = mysqli_query($con, $query);
     if ( ! $result) {
         if (mysqli_errno($con)) {
