@@ -25,12 +25,12 @@ function output_error($title, $error) {
 
 <html>
     <head>
-        <title>Amazon 2.0 Data Import</title>
+        <title>Amazon 2.0 Data Report</title>
         <?php include_once 'bs.php'; ?>
     </head>
     <body>
     <?php include_once 'header.php';?>
-    <h1>>Amazon 2.0 Data Import</h1>
+    <h1>Amazon 2.0 Data Report</h1>
     <h3>Departments, Sellers, and Items</h3>
         <?php
 
