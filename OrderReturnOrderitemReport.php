@@ -79,29 +79,29 @@ else {
         $needPrintItemHeader = true;
         foreach ($items as $i) {
             if ($i["Used"])
-                $output .= "<tr><td></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
+                $output .= "<tr><td class='table-borderless'></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
         }
         if ($output == "") {
             echo "<tr><td>No items ordered.</td></tr>";
         }
         else {
             $needPrintItemHeader = false;
-            echo "<tr><td>Items Ordered:<td></tr>";
-            echo "<tr class='fw-bold'><td></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
+            echo "<tr><td colspan='4'>Items Ordered:<td></tr>";
+            echo "<tr class='fw-bold'><td class='table-borderless'></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
             echo $output;
         }
         $output = "";
         foreach ($returns as $i) {
             if ($i["Used"])
-                $output .= "<tr><td></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
+                $output .= "<tr><td class='table-borderless'></td><td>{$i["Id"]}</td><td>{$i["Name"]}</td><td>".'$'."{$i["Price"]} (x{$i["Quantity"]})</td><td>{$i["Seller"]}</td></tr>";
         }
         if ($output == "") {
             echo "<tr><td>No items returned.</td></tr>";
         }
         else {
-            echo "<tr><td>Items Returned:<td></tr>";
+            echo "<tr><td colspan='4'>Items Returned:<td></tr>";
             if ($needPrintItemHeader)
-                echo "<tr class='fw-bold'><td></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
+                echo "<tr class='fw-bold'><td class='table-borderless'></td><td>Item ID</td><td>Item Name</td><td>Price (Quantity)</td><td>Seller Name</td></tr>";
             echo $output;
         }
     }

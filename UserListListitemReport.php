@@ -65,7 +65,7 @@ if ($importAttempted) {
             echo "<thead>";
             echo "<tr class='fw-bold'>\n";
             echo "  <td>UserID</td>\n";
-            echo "  <td>AccountStatusID</td>\n";
+            echo "  <td>AccountStatus</td>\n";
             echo "  <td>UserName</td>\n";
             echo "  <td>DeliveryAddress</td>\n";
             echo "  <td>Password</td>\n";
@@ -100,16 +100,16 @@ if ($importAttempted) {
                 $list_string = implode(", ", $lists);
             }
             echo "<tr>";
-                echo "<td colspan='3' class='pizzaDataDetailsCell'>";
+                echo "<td colspan='4' class='pizzaDataDetailsCell'>";
                     echo "ListName: {$list_string} <br>\n"
                 . "</td>";
             echo "</tr>";
 
-            echo "<tr><td>Items in List:</td></tr>";
-            echo "<tr class='fw-bold'><td></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+            echo "<tr><td colspan='4'>Items in List:</td></tr>";
+            echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
             $output = "";
             foreach($items as $i){
-                $output .= "<tr><td></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+                $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
             }
             echo $output;
         }
