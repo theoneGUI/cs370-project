@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.33, for Win64 (x86_64)
 --
--- Host: localhost    Database: mydb
+-- Host: localhost    Database: s_amwright
 -- ------------------------------------------------------
 -- Server version	5.7.33
 
@@ -26,7 +26,7 @@ CREATE TABLE `accountstatus` (
   `AccountStatusID` int(11) NOT NULL AUTO_INCREMENT,
   `AccountStatusName` varchar(50) NOT NULL,
   PRIMARY KEY (`AccountStatusID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -35,7 +35,7 @@ CREATE TABLE `accountstatus` (
 
 LOCK TABLES `accountstatus` WRITE;
 /*!40000 ALTER TABLE `accountstatus` DISABLE KEYS */;
-INSERT INTO `accountstatus` VALUES (1,'Regular'),(2,'Plus'),(3,'Premium');
+INSERT INTO `accountstatus` VALUES (1,'Regular Acct'),(2,'Plus Acct'),(3,'Premium Acct'),(4,'Inactive Acct');
 /*!40000 ALTER TABLE `accountstatus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -78,7 +78,7 @@ CREATE TABLE `department` (
   `DeptName` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`DepartmentID`),
   UNIQUE KEY `DeptName` (`DeptName`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +87,6 @@ CREATE TABLE `department` (
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
-INSERT INTO `department` VALUES (62,'Clothing'),(61,'Electronics'),(60,'Kitchen');
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,7 +110,7 @@ CREATE TABLE `item` (
   UNIQUE KEY `SellerID_2` (`SellerID`,`SKU`),
   KEY `Item_Seller_idx` (`SellerID`),
   CONSTRAINT `Item_Seller` FOREIGN KEY (`SellerID`) REFERENCES `seller` (`SellerID`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +137,7 @@ CREATE TABLE `list` (
   UNIQUE KEY `listName` (`listName`,`UserID`),
   KEY `FK_List_User_idx` (`UserID`),
   CONSTRAINT `FK_List_User` FOREIGN KEY (`UserID`) REFERENCES `user` (`UserID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -278,7 +277,7 @@ CREATE TABLE `seller` (
   UNIQUE KEY `SellerName` (`SellerName`),
   KEY `Seller_Department_idx` (`DepartmentID`),
   CONSTRAINT `Seller_Department` FOREIGN KEY (`DepartmentID`) REFERENCES `department` (`DepartmentID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,7 +310,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `EmailAddress` (`EmailAddress`),
   KEY `User_AccountStatus_idx` (`AccountStatusID`),
   CONSTRAINT `User_AccountStatus` FOREIGN KEY (`AccountStatusID`) REFERENCES `accountstatus` (`AccountStatusID`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,4 +331,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-13 13:10:12
+-- Dump completed on 2023-11-29 13:09:06
