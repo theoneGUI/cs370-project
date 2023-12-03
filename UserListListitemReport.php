@@ -99,31 +99,37 @@ if ($importAttempted) {
             if (count($lists) != 0) {
                 $list_string = implode(", ", $lists);
             }
-            echo "<tr>";
-                echo "<td colspan='4' class='fw-bold'>";
-                    echo "ListName: {$list_string} <br>\n"
-                . "</td>";
-            echo "</tr>";
-
-            echo "<tr><td colspan='4'>Items in List:</td></tr>";
-            echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
-            $output = "";
-            foreach($items as $i){
-                $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+            if($list_string == ""){
+                $output =  "<tr><td>No lists for this user.</td></tr>";
             }
+            else {
+                echo "<tr>";
+                echo "<td colspan='4' class='fw-bold'>";
+                echo "ListName: {$list_string} <br>\n"
+                    . "</td>";
+                echo "</tr>";
+
+                echo "<tr><td colspan='4'>Items in List:</td></tr>";
+                echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+                $output = "";
+                foreach($items as $i){
+                    $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+                }
+            }
+
             echo $output;
         }
 
         $query = "SELECT t0.UserID, t4.AccountStatusName AS AccountStatusID, CONCAT(t0.FirstName, ' ',  t0.LastName) AS UserName, t0.DeliveryAddress, 
         t0.Password, t0.Language, t0.PhoneNumber, t0.EmailAddress, t1.ListID, t1.ListName, t2.ItemID, t2.ItemQuantity,
         t3.ItemName, t3.Price FROM `user` t0 
-        INNER JOIN `list` t1
+        LEFT OUTER JOIN `list` t1
         ON t0.UserID = t1.UserID
-        INNER JOIN `listitem` t2
+        LEFT OUTER JOIN `listitem` t2
         ON t1.ListID = t2.ListID
-        INNER JOIN `item` t3
+        LEFT OUTER JOIN `item` t3
         ON t2.ItemID = t3.ItemID "
-        . "INNER JOIN accountstatus t4 ON t4.AccountStatusID = t0.AccountStatusID";
+        . "LEFT OUTER JOIN accountstatus t4 ON t4.AccountStatusID = t0.AccountStatusID";
         $result = mysqli_query($con, $query);
         if ( ! $result) {
             if (mysqli_errno($con)) {
