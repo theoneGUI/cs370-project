@@ -40,6 +40,8 @@ function output_error($title, $error) {
 </style>
 <body>
 <?php include_once 'header.php'; ?>
+<h1>Amazon 2.0 Data Report</h1>
+<h3>Orders and Returns</h3>
 <?php
 if ($conError) {
     echo output_error("error", $importErrorMesg);
