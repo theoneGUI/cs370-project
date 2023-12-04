@@ -102,6 +102,9 @@ if ($importAttempted) {
             if($list_string == ""){
                 $output =  "<tr><td>No lists for this user.</td></tr>";
             }
+            else if ($list_string == "None") {
+                echo "<tr><td>No Data</td></tr>";
+            }
             else {
                 echo "<tr>";
                 echo "<td colspan='4' class='fw-bold'>";

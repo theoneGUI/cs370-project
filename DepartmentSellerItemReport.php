@@ -89,19 +89,26 @@ function output_error($title, $error) {
             if (count($departments) != 0) {
                 $department_string = implode(", ", $departments);
             }
-            echo "<tr>";
-            echo "<td colspan='4' class='pizzaDataDetailsCell'>";
-            echo "Department Name: {$department_string} <br>\n"
-                . "</td>";
-            echo "</tr>";
 
-            echo "<tr><td colspan='4' >Items that are sold:</td></tr>";
-            echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
-            $output = "";
-            foreach($items as $i){
-                $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+            if ($department_string == 'None') {
+                echo "<tr><td>No Data</td></tr>";
             }
-            echo $output;
+            else {
+                echo "<tr>";
+                echo "<td colspan='4' class='pizzaDataDetailsCell'>";
+                echo "Department Name: {$department_string} <br>\n"
+                    . "</td>";
+                echo "</tr>";
+
+                echo "<tr><td colspan='4' >Items that are sold:</td></tr>";
+                echo "<tr class='fw-bold'><td class='table-borderless'></td><td>ItemName</td><td>ItemPrice</td><td>ItemQuantity</td></tr>";
+                $output = "";
+                foreach($items as $i){
+                    $output .= "<tr><td class='table-borderless'></td><td>{$i["item"]}</td><td>{$i["price"]}</td><td>{$i["quantity"]}</td></tr>";
+                }
+                echo $output;
+            }
+
         }
 
 
