@@ -19,7 +19,13 @@
 <?php include_once 'header.php'; ?>
 <div class="p-5 bg-dark">
     <h1 class="text-light">Amazon 2.0 Home</h1>
+    Welcome to Amazon 2.0, your ultimate online shopping destination for a
+        seamless and delightful retail experience! At Amazon 2.0, we've curated
+        a vast and diverse selection of products to cater to your every need
+        and desire. Whether you're looking for the latest tech gadgets,
+        trendy fashion, home essentials, or unique handcrafted items, we've got it all.
     <section>
+        <h2>Featured products:</h2>
         <?php
         $query = "SELECT t0.ItemName, t0.Price, t0.QuantityAvailable, t1.SellerName FROM" .
             " item t0 INNER JOIN seller t1 ON t0.SellerID = t1.SellerID".
